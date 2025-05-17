@@ -1,1 +1,33 @@
-https://pastebin.com/raw/unChzPaZ
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+
+-- ✅ LOAD CLIENT DATA
+local ClientData = require(ReplicatedStorage:WaitForChild("ClientModules").Core.ClientData)
+local getData = ClientData.getdata or ClientData.get_data or ClientData.GetData
+
+-- 🕒 Wait until data is loaded
+repeat task.wait() until getData() and getData()[player.Name]
+
+local data = getData()[player.Name]
+local pets = data and data.inventory and data.inventory.pets
+
+-- ✅ COLLECT AND COUNT EGG KINDS
+local eggKinds = {}
+
+for _, pet in pairs(pets or {}) do
+	local kind = pet.kind or ""
+	if string.find(kind:lower(), "egg") then
+		eggKinds[kind] = (eggKinds[kind] or 0) + 1
+	end
+end
+
+-- ✅ PRINT RESULTS
+print("🥚 Egg Kind Counts:")
+if next(eggKinds) == nil then
+	print("⚠️ No egg pets found.")
+else
+	for kind, count in pairs(eggKinds) do
+		print(kind .. " - " .. count)
+	end
+end
